@@ -26,4 +26,4 @@ Example:
         chart.draw('#funnelContainer', 2);
     </script>
   
-A demo of the above example can be found [here]('http://blog.smithamilli.com/funnel-charts-in-d3-js/')
+A demo of the above example can be found [here](http://blog.smithamilli.com/funnel-charts-in-d3-js/)
