@@ -27,3 +27,7 @@ Example:
     </script>
   
 A demo of the above example can be found [here](http://smithamilli.com/funnel-charts-in-d3-js/)
+
+License
+======
+MIT
