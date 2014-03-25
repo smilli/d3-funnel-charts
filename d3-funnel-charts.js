@@ -22,21 +22,21 @@ function FunnelChart(data, width, height, bottomPct) {
   this.width = typeof width !== 'undefined' ? width : DEFAULT_WIDTH;
   this.height = typeof height !== 'undefined' ? height : DEFAULT_HEIGHT;
   this.bottomPct = typeof bottomPct !== 'undefined' ? bottomPct : DEFAULT_BOTTOM_PERCENT;
-  this.slope = 2*this.height/(this.width - this.bottomPct*this.width);
-  this.totalArea = (this.width+this.bottomPct*this.width)*this.height/2;
+  this._slope = 2*this.height/(this.width - this.bottomPct*this.width);
+  this._totalArea = (this.width+this.bottomPct*this.width)*this.height/2;
 }
 
-FunnelChart.prototype.getLabel = function(ind){
+FunnelChart.prototype._getLabel = function(ind){
   /* Get label of a category at index 'ind' in this.data */
   return this.data[ind][0]
 }
 
-FunnelChart.prototype.getEngagementCount = function(ind){
+FunnelChart.prototype._getEngagementCount = function(ind){
   /* Get engagement value of a category at index 'ind' in this.data */
   return this.data[ind][1]
 }
 
-FunnelChart.prototype.createPaths = function(){
+FunnelChart.prototype._createPaths = function(){
   /* Returns an array of points that can be passed into d3.svg.line to create a path for the funnel */
   trapezoids = []
 
@@ -45,12 +45,12 @@ FunnelChart.prototype.createPaths = function(){
     if(dataInd >= chart.data.length) return;
 
     // math to calculate coordinates of the next base
-    area = chart.data[dataInd][1]*chart.totalArea/chart.totalEngagement;
+    area = chart.data[dataInd][1]*chart._totalArea/chart.totalEngagement;
     prevBaseLength = prevRightX - prevLeftX;
-    nextBaseLength = Math.sqrt((chart.slope * prevBaseLength * prevBaseLength - 4 * area)/chart.slope);
+    nextBaseLength = Math.sqrt((chart._slope * prevBaseLength * prevBaseLength - 4 * area)/chart._slope);
     nextLeftX = (prevBaseLength - nextBaseLength)/2 + prevLeftX; 
     nextRightX = prevRightX - (prevBaseLength-nextBaseLength)/2;
-    nextHeight = chart.slope * (prevBaseLength-nextBaseLength)/2 + prevHeight;
+    nextHeight = chart._slope * (prevBaseLength-nextBaseLength)/2 + prevHeight;
 
     points = [[nextRightX, nextHeight]]
     points.push([prevRightX, prevHeight]);
@@ -83,7 +83,7 @@ FunnelChart.prototype.draw = function(elem, speed){
   // Automatically generates colors for each trapezoid in funnel
   var colorScale = d3.scale.category10()
 
-  var paths = this.createPaths();
+  var paths = this._createPaths();
 
   function drawTrapezoids(funnel, i){
     var trapezoid = funnelSvg
@@ -104,7 +104,7 @@ FunnelChart.prototype.draw = function(elem, speed){
 
     funnelSvg
     .append('text')
-    .text(funnel.getLabel(i) + ': ' + funnel.getEngagementCount(i))
+    .text(funnel._getLabel(i) + ': ' + funnel._getEngagementCount(i))
     .attr("x", function(d){ return funnel.width/2 })
     .attr("y", function(d){ return (paths[i][0][1] + paths[i][1][1])/2}) // Average height of bases
     .attr("text-anchor", "middle")
