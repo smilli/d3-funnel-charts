@@ -5,7 +5,7 @@ A funnel chart implementation using d3.js
 
 Usage
 =====
-To begin, you must instantiate a FunnelChart.  FunnelChart objects have four parameters: data, width, height, and bottomPct.  Data is the only required parameter.
+To begin, you must instantiate a FunnelChart.  The options you can pass to the FunnelChart are the following (the only required option is `data`):
 
 `data` = an array containing arrays of categories and engagement in order from greatest expected funnel engagement to lowest.  
 
@@ -22,8 +22,13 @@ Example:
     <script src="d3-funnel-charts.min.js"></script>
     <script type="text/javascript">
         var data = [['Video Views', 1500], ['Comments', 300], ['Video Responses', 150]];
-        var chart = new FunnelChart(data, 650, 450, 1/4);
-        chart.draw('#funnelContainer', 2);
+   		var chart = new FunnelChart({
+    					data: data,
+    					width: 650, 
+    					height: 450, 
+    					bottomPct: 1/4
+    				});
+    	chart.draw('#funnelContainer', 2);
     </script>
   
 A demo of the above example can be found [here](http://smithamilli.com/blog/funnel-charts-in-d3.js/)

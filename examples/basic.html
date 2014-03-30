@@ -6,7 +6,12 @@
 <script type="text/javascript" src="../d3-funnel-charts.min.js"></script>
 <script type="text/javascript">
     var data = [['Video Views', 1500], ['Comments', 300], ['Video Responses', 150]];
-    var chart = new FunnelChart(data, 650, 450, 1/4);
+    var chart = new FunnelChart({
+    				data: data,
+    				width: 650, 
+    				height: 450, 
+    				bottomPct: 1/4
+    			});
     chart.draw('#funnelContainer', 2);
 </script>
 </html>
