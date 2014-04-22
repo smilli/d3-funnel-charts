@@ -18,8 +18,8 @@
     
     this.data = options.data;
     this.totalEngagement = 0;
-    for(var i = 0; i < data.length; i++){
-      this.totalEngagement += data[i][1];
+    for(var i = 0; i < this.data.length; i++){
+      this.totalEngagement += this.data[i][1];
     }
     this.width = typeof options.width !== 'undefined' ? options.width : DEFAULT_WIDTH;
     this.height = typeof options.height !== 'undefined' ? options.height : DEFAULT_HEIGHT;
