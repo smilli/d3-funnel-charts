@@ -1,0 +1,16 @@
+{
+  "name": "d3-funnel-charts",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A funnel chart implementation in d3.js",
+  "repository": "https://github.com/smilli/d3-funnel-charts",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0"
+  },
+  "scripts": {
+    "prestart": "npm install",
+    "start": "http-server -a localhost -p 8000"
+  }
+}
