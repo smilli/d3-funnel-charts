@@ -16,10 +16,23 @@
         This is used to calculate the slope, so the chart's view can be changed by changing this value
     */
 
+    // Extending the input parameters to include color:
+    this.customColorScaleDomains = [];
+    this.customColorScaleRange = [];
+
+    // Create the option for people to force the funnel sections to be of equal size, default is false
+    this.equalSizedFunnelSteps = typeof options.equalSizedFunnelSteps !== 'undefined' ? options.equalSizedFunnelSteps :false;
+
     this.data = options.data;
     this.totalEngagement = 0;
+
     for(var i = 0; i < this.data.length; i++){
-      this.totalEngagement += this.data[i][1];
+        this.totalEngagement += this.data[i][1];
+        // Extending the input parameters to include color:
+        if (this.data[i][2] !== 'undefined') {
+            this.customColorScaleDomains.push(this.data[i][0]);
+            this.customColorScaleRange.push(this.data[i][2]);
+        }
     }
     this.width = typeof options.width !== 'undefined' ? options.width : DEFAULT_WIDTH;
     this.height = typeof options.height !== 'undefined' ? options.height : DEFAULT_HEIGHT;
@@ -31,6 +44,11 @@
   window.FunnelChart.prototype._getLabel = function(ind){
     /* Get label of a category at index 'ind' in this.data */
     return this.data[ind][0];
+  };
+
+  window.FunnelChart.prototype._getFunction = function (ind) {
+      /* Get function of a category at index 'ind' in this.data */
+      return typeof this.data[ind][3] === 'function' ? this.data[ind][3] : function () { };
   };
 
   window.FunnelChart.prototype._getEngagementCount = function(ind){
@@ -46,8 +64,14 @@
       // reached end of funnel
       if(dataInd >= chart.data.length) return;
 
-      // math to calculate coordinates of the next base
-      area = chart.data[dataInd][1]*chart._totalArea/chart.totalEngagement;
+      if (chart.equalSizedFunnelSteps) {
+          // math to calculate coordinates of the next base
+          area = chart.totalEngagement / chart.data.length * chart._totalArea / chart.totalEngagement;
+      } else {
+          // math to calculate coordinates of the next base
+          area = chart.data[dataInd][1] * chart._totalArea / chart.totalEngagement;
+      }
+      
       prevBaseLength = prevRightX - prevLeftX;
       nextBaseLength = Math.sqrt((chart._slope * prevBaseLength * prevBaseLength - 4 * area)/chart._slope);
       nextLeftX = (prevBaseLength - nextBaseLength)/2 + prevLeftX;
@@ -82,14 +106,25 @@
                     .x(function(d) { return d[0]; })
                     .y(function(d) { return d[1]; });
 
-    // Automatically generates colors for each trapezoid in funnel
-    var colorScale = d3.scale.category10();
+      
 
-    var paths = this._createPaths();
+    // Color management
+    if (this.customColorScaleDomains.length != 0 && this.customColorScaleRange.length != 0) {
+        // assign the colors to the colorScale
+        var colorScale = d3.scale.ordinal()
+                .domain(this.customColorScaleDomains)
+                .range(this.customColorScaleRange);
+    } else {
+        // Automatically generates colors for each trapezoid in funnel
+        var colorScale = d3.scale.category10();
+    }
+    
+     var paths = this._createPaths();
 
     function drawTrapezoids(funnel, i){
-      var trapezoid = funnelSvg
+        var trapezoid = funnelSvg
                       .append('svg:path')
+                         .on("click", function(d) { funnel._getFunction(i)(funnel._getLabel(i)); } )
                       .attr('d', function(d){
                         return funnelPath(
                             [paths[i][0], paths[i][1], paths[i][2],
@@ -108,9 +143,11 @@
                         .attr("d", function(d){return funnelPath(paths[i]);})
                         .attr("fill", function(d){return colorScale(i);});
 
-      funnelSvg
+        funnelSvg
       .append('svg:text')
+            
       .text(funnel._getLabel(i) + ': ' + funnel._getEngagementCount(i))
+            .on("click", function (d) { funnel._getFunction(i)(funnel._getLabel(i)); })
       .attr("x", function(d){ return funnel.width/2; })
       .attr("y", function(d){
         return (paths[i][0][1] + paths[i][1][1])/2;}) // Average height of bases
@@ -124,7 +161,6 @@
         });
       }
     }
-
     drawTrapezoids(this, 0);
   };
 })();
