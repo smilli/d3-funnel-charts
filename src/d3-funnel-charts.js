@@ -23,6 +23,10 @@
     // Create the option for people to force the funnel sections to be of equal size, default is false
     this.equalSizedFunnelSteps = typeof options.equalSizedFunnelSteps !== 'undefined' ? options.equalSizedFunnelSteps :false;
 
+    // Create the option for people to make the trapezoids clickable.
+    this.callBack = (typeof options.callBack !== 'undefined') && (typeof options.callBack === 'function') ? options.callBack : function () { };
+
+
     this.data = options.data;
     this.totalEngagement = 0;
 
@@ -47,8 +51,8 @@
   };
 
   window.FunnelChart.prototype._getFunction = function (ind) {
-      /* Get function of a category at index 'ind' in this.data */
-      return typeof this.data[ind][3] === 'function' ? this.data[ind][3] : function () { };
+      /* Get call back function */
+      return this.callBack;
   };
 
   window.FunnelChart.prototype._getEngagementCount = function(ind){
